@@ -10,29 +10,31 @@ let request = require('request');
 let cheerio = require('cheerio');
 
 var app = express();
-
+/*
 app.createServer(function (req, res) {
     res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
     res.end();
-}).listen(3000, 'localhost', function () {
+}).listen(3000, '192.168.123.7', function () {
     console.log('서버 실행 중...')
 });
-
+*/
 /* API 경로 */
 // 레시피 api
-const $url = 'http://211.237.50.150:7080/openapi/sample/xml/Grid_20150827000000000226_1/1/5'
+const $basic_url = 'Grid_20150827000000000226_1/1/5'
+const $ingredient_url = 'Grid_20150827000000000227_1/1/5'
+const $process_url = 'Grid_20150827000000000228_1/1/5'
 const $KEY = 'e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf'
-const $station = '195453'
-const $sample = 'http://211.237.50.150:7080/openapi/e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf/xml/Grid_20150827000000000226_1/20/25'
-/*
-app.listen(3000, 'localhost', function () {
+const $sample = 'http://211.237.50.150:7080/openapi/e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf/json/Grid_20150827000000000226_1/20/25'
+
+app.listen(3000, '192.168.123.7', function () {
     console.log('서버 실행 중...');
 });
-*/
+
 console.log($sample);
 
 request($sample, function(err, res, body) {
     $ = cheerio.load(body);
+    console.log(body);
     
     $('row').each(function(idx) {
         let no1 = $(this).find('RECIPE_NM_KO').text();
@@ -86,7 +88,7 @@ app.post('/user/login', function (req, res) {
     var userEmail = req.body.userEmail;
     var userPwd = req.body.userPwd;
     var sql = 'select * from Users where UserEmail = ?';
-
+    console.log("확인, 밑에 오류코드는 디비 연결안해서 그럼ㅎ")
     connection.query(sql, userEmail, function (err, result) {
         var resultCode = 404;
         var message = '에러가 발생했습니다';
