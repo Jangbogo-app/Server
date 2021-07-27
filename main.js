@@ -20,11 +20,11 @@ app.createServer(function (req, res) {
 */
 /* API 경로 */
 // 레시피 api
-const $basic_url = 'Grid_20150827000000000226_1/1/5'
-const $ingredient_url = 'Grid_20150827000000000227_1/1/5'
-const $process_url = 'Grid_20150827000000000228_1/1/5'
-const $KEY = 'e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf'
-const $sample = 'http://211.237.50.150:7080/openapi/e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf/json/Grid_20150827000000000226_1/20/25'
+const $basic_url = 'Grid_20150827000000000226_1/1/537'
+const $ingredient_url = 'Grid_20150827000000000227_1/1/6104'
+const $process_url = 'Grid_20150827000000000228_1/1/3022'
+const $KEY = 'http://211.237.50.150:7080/openapi/e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf/json/'
+const $sample = 'http://211.237.50.150:7080/openapi/e8e79f2dfe0db907b387019f97ac979a9bba1d7e30cc349e37afd92326faefbf/xml/Grid_20150827000000000227_1/6001/6104'
 
 app.listen(3000, '192.168.123.7', function () {
     console.log('서버 실행 중...');
@@ -34,12 +34,12 @@ console.log($sample);
 
 request($sample, function(err, res, body) {
     $ = cheerio.load(body);
-    console.log(body);
     
     $('row').each(function(idx) {
-        let no1 = $(this).find('RECIPE_NM_KO').text();
-        let no2 = $(this).find('SUMRY').text();
-        console.log(`레시피이름 : ${no1}, 소개 : ${no2}`);
+        let r_id = $(this).find('RECIPE_ID').text();
+        let r_sn = $(this).find('IRDNT_SN').text();
+        let r_name = $(this).find('IRDNT_NM').text();
+        let r_capacity = $(this).find('IRDNT_CPCTY').text();
     });
 });
 
@@ -51,18 +51,34 @@ app.get('/', (req, res) => {
 
 app.post('/mealkit', function(req, res) {
     var recipe_name = req.body.recipe_name;
+    var sql = 'select * from recipe_basic';
+    
+    connection.query(sql,function(err,rows,fields){
+        if(!err){
+
+            const newrows=JSON.stringify(rows);//DB의 칼럼값을 json으로 형변환
+            fs.writeFileSync('recipe_basic.json', newrows); //json파일로 만들기
+            console.log(newrows);
+	    res.json(rows);
+        }
+        else{
+            console.log('Error while performing Query.', err);
+        }
+    });
 });
 
 app.post('/user/join', function (req, res) {
-    var userEmail = req.body.userEmail;
-    var userPwd = req.body.userPwd;
-    var userName = req.body.userName;
+    var mem_type = req.body.mem_type;
+    var id = req.body.id;
+    var pwd = req.body.pwd;
+    var phone = req.body.phone;
+    var addr = req.body.addr;
+    var name = req.body.name;
     
-    console.log(userEmail,userPwd, userName);
 
     // 삽입을 수행하는 sql문.
-    var sql = 'INSERT INTO Users (UserEmail, UserPwd, UserName) VALUES (?, ?, ?)';
-    var params = [userEmail, userPwd, userName];
+    var sql = 'INSERT INTO member_main (mem_type, id, pwd, phone, addr, name) VALUES (?, ?, ?, ?, ?, ?)';
+    var params = [mem_type, id, pwd, phone, addr, name];
     
     // sql 문의 ?는 두번째 매개변수로 넘겨진 params의 값으로 치환된다.
     connection.query(sql, params, function (err, result) {
@@ -88,7 +104,6 @@ app.post('/user/login', function (req, res) {
     var userEmail = req.body.userEmail;
     var userPwd = req.body.userPwd;
     var sql = 'select * from Users where UserEmail = ?';
-    console.log("확인, 밑에 오류코드는 디비 연결안해서 그럼ㅎ")
     connection.query(sql, userEmail, function (err, result) {
         var resultCode = 404;
         var message = '에러가 발생했습니다';
