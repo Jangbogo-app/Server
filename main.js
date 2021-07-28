@@ -52,6 +52,7 @@ app.get('/', (req, res) => {
 app.post('/mealkit', function(req, res) {
     var recipe_name = req.body.recipe_name;
     var sql = 'select * from recipe_basic';
+    var sql2 = 'select * from recipe_ingredient';
     
     connection.query(sql,function(err,rows,fields){
         if(!err){
