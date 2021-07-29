@@ -40,6 +40,8 @@ request($sample, function(err, res, body) {
         let r_sn = $(this).find('IRDNT_SN').text();
         let r_name = $(this).find('IRDNT_NM').text();
         let r_capacity = $(this).find('IRDNT_CPCTY').text();
+        
+        let a = $(this).find('IRDNT_CPCTY').text();
     });
 });
 
