@@ -10,14 +10,7 @@ let request = require('request');
 let cheerio = require('cheerio');
 
 var app = express();
-/*
-app.createServer(function (req, res) {
-    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-    res.end();
-}).listen(3000, '192.168.123.7', function () {
-    console.log('서버 실행 중...')
-});
-*/
+
 /* API 경로 */
 // 레시피 api
 const $basic_url = 'Grid_20150827000000000226_1/1/537'
@@ -41,7 +34,6 @@ request($sample, function(err, res, body) {
         let r_name = $(this).find('IRDNT_NM').text();
         let r_capacity = $(this).find('IRDNT_CPCTY').text();
         
-        let a = $(this).find('IRDNT_CPCTY').text();
     });
 });
 
